@@ -68,7 +68,14 @@ function maxItemAssociation(carts) {
     const processedRecs = process(primaryRecs)
 
     const maxLength = Math.max(...processedRecs.map(rec => rec.size))
-    return Array.from(processedRecs.find(rec => rec.size === maxLength))
+
+    const resultRec = processedRecs
+        .filter(rec => rec.size === maxLength)
+        .map(rec => Array.from(rec).sort())
+        .sort()
+        .shift()
+
+    return Array.from(resultRec)
 }
 
 module.exports = {

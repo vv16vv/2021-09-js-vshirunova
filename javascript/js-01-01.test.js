@@ -144,7 +144,7 @@ describe("js-01-01", () => {
                 ["a", "b"],
                 ["a", "c"],
             ]
-            expect(maxItemAssociation(sets).sort()).toStrictEqual(["a", "b", "c"])
+            expect(maxItemAssociation(sets)).toStrictEqual(["a", "b", "c"])
         })
         it("[[a, b], [a, c], [e, d] => [a, b, c]", () => {
             const sets = [
@@ -152,7 +152,7 @@ describe("js-01-01", () => {
                 ["a", "c"],
                 ["e", "d"],
             ]
-            expect(maxItemAssociation(sets).sort()).toStrictEqual(["a", "b", "c"])
+            expect(maxItemAssociation(sets)).toStrictEqual(["a", "b", "c"])
         })
         it("[[a, b], [a, c], [e, d], [d, h], [h, i]] => [d, e, h, i]", () => {
             const sets = [
@@ -162,7 +162,7 @@ describe("js-01-01", () => {
                 ["d", "h"],
                 ["h", "i"],
             ]
-            expect(maxItemAssociation(sets).sort()).toStrictEqual(["d", "e", "h", "i"])
+            expect(maxItemAssociation(sets)).toStrictEqual(["d", "e", "h", "i"])
         })
         it("[[a, z], [b, c], [b, d], [b, z]] => [b, c, d, z, a]", () => {
             const sets = [
@@ -171,7 +171,7 @@ describe("js-01-01", () => {
                 ["b", "d"],
                 ["b", "z"],
             ]
-            expect(maxItemAssociation(sets).sort()).toStrictEqual(["a", "b", "c", "d", "z"])
+            expect(maxItemAssociation(sets)).toStrictEqual(["a", "b", "c", "d", "z"])
         })
         it("[[q, w, a], [a, b], [a, c], [q, e], [q, r], [w, o], [1, 2]] => [q, w, a, b, c, e, r, o]", () => {
             const sets = [
@@ -183,7 +183,16 @@ describe("js-01-01", () => {
                 ["w", "o"],
                 ["1", "2"],
             ]
-            expect(maxItemAssociation(sets).sort()).toStrictEqual(["q", "w", "a", "b", "c", "e", "r", "o"].sort())
+            expect(maxItemAssociation(sets)).toStrictEqual(["q", "w", "a", "b", "c", "e", "r", "o"].sort())
+        })
+        it("[['d', 'n'],['d', 'e'],['a', 'c'],['a', 'b']] => [a, b, c]", () => {
+            const sets = [
+                ["d", "n"],
+                ["d", "e"],
+                ["a", "c"],
+                ["a", "b"]
+            ]
+            expect(maxItemAssociation(sets)).toStrictEqual(["a", "b", "c"])
         })
     })
 })
