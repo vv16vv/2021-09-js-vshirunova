@@ -47,19 +47,18 @@
 //
 
 function promiseReduce(asyncFunctions, reducer, initialValue) {
-    let chain = Promise.resolve(initialValue)
     let result = initialValue
 
-    for (const asyncFunction of asyncFunctions) {
-        chain = chain
-            .then(() => asyncFunction())
-            .then(r => {
-                result = reducer(result, r)
-                return result
-            })
-            .catch(reason => console.log(`Failed: reason = ${reason}`))
-    }
-    return chain
+    return asyncFunctions.reduce(
+        (chain, asyncFunction) => chain
+                .then(() => asyncFunction())
+                .then(r => {
+                    result = reducer(result, r)
+                    return result
+                })
+                .catch(reason => console.log(`Failed: reason = ${reason}`)),
+        Promise.resolve(initialValue)
+    )
 }
 
 module.exports = promiseReduce
