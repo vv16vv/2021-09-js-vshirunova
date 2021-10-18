@@ -76,6 +76,23 @@ describe("getPath", () => {
             const actual = getPath(el)
             expect(actual).toBe("#p1")
         })
+        it("path with parent's only id if there is the unique id", () => {
+            const html = "<html lang='ru'>\n" +
+                "<head>\n" +
+                "  <title>Hello</title>\n" +
+                "</head>\n" +
+                "<body>\n" +
+                "  <div id='p1'>" +
+                "    <p>Abc</p>\n" +
+                "  </div>" +
+                "</body>\n" +
+                "</html>"
+            const doc = (new jsdom.JSDOM(html)).window.document
+
+            const el = doc.getElementsByTagName("p")[0]
+            const actual = getPath(el)
+            expect(actual).toBe("#p1 p")
+        })
         it("full path with id if there are several the same ids", () => {
             const html = "<html lang='ru'>\n" +
                 "<head>\n" +
