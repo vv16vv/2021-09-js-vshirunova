@@ -256,5 +256,24 @@ describe("getPath", () => {
             expect(actual).toBe("body ul.items li:last-of-type")
             testSelectorIsUnique(doc, el, actual)
         })
+        it("path nth-child + class", () => {
+            const html = "<html lang='ru'>\n" +
+                "<body>\n" +
+                "  <ul class='items'>" +
+                "    <li>yellow</li>\n" +
+                "    <li class='color'>red</li>\n" +
+                "    <li class='color'>green</li>\n" +
+                "    <li>brown</li>\n" +
+                "    <div>extra div</div>\n" +
+                "  </ul>\n" +
+                "</body>\n" +
+                "</html>"
+            const doc = (new jsdom.JSDOM(html)).window.document
+
+            const el = doc.getElementsByTagName("li")[1]
+            const actual = getPath(el)
+            expect(actual).toBe("body ul.items li.color:nth-child(2)")
+            testSelectorIsUnique(doc, el, actual)
+        })
     })
 })
