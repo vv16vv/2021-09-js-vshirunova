@@ -20,17 +20,17 @@ describe("getPath", () => {
             "</html>"
         const doc = (new jsdom.JSDOM(html)).window.document
         it("for html", () => {
-            const el = doc.getElementsByTagName("html")[0]
+            const el = doc.querySelector("html")
             const actual = getPath(el)
             expect(actual).toBeNull()
         })
         it("for out-of-body tags - head", () => {
-            const el = doc.getElementsByTagName("head")[0]
+            const el = doc.querySelector("head")
             const actual = getPath(el)
             expect(actual).toBeNull()
         })
         it("for out-of-body tags - head title", () => {
-            const el = doc.getElementsByTagName("title")[0]
+            const el = doc.querySelector("title")
             const actual = getPath(el)
             expect(actual).toBeNull()
         })
@@ -49,7 +49,7 @@ describe("getPath", () => {
                 "</html>"
             const doc = (new jsdom.JSDOM(html)).window.document
 
-            const el = doc.getElementsByTagName("body")[0]
+            const el = doc.querySelector("body")
             const actual = getPath(el)
             expect(actual).toBe("body")
             testSelectorIsUnique(doc, el, actual)
@@ -66,7 +66,7 @@ describe("getPath", () => {
                 "</html>"
             const doc = (new jsdom.JSDOM(html)).window.document
 
-            const el = doc.getElementsByClassName("title")[0]
+            const el = doc.querySelector("h1")
             const actual = getPath(el)
             expect(actual).toBe("body h1.title")
             testSelectorIsUnique(doc, el, actual)
@@ -82,7 +82,7 @@ describe("getPath", () => {
                 "</html>"
             const doc = (new jsdom.JSDOM(html)).window.document
 
-            const el = doc.getElementsByTagName("p")[0]
+            const el = doc.querySelector("p")
             const actual = getPath(el)
             expect(actual).toBe("#p1")
             testSelectorIsUnique(doc, el, actual)
@@ -100,7 +100,7 @@ describe("getPath", () => {
                 "</html>"
             const doc = (new jsdom.JSDOM(html)).window.document
 
-            const el = doc.getElementsByTagName("p")[0]
+            const el = doc.querySelector("p")
             const actual = getPath(el)
             expect(actual).toBe("#p1 p")
             testSelectorIsUnique(doc, el, actual)
@@ -117,7 +117,7 @@ describe("getPath", () => {
                 "</html>"
             const doc = (new jsdom.JSDOM(html)).window.document
 
-            const el = doc.getElementsByTagName("p")[0]
+            const el = doc.querySelector("p")
             const actual = getPath(el)
             expect(actual).toBe("body p#p1")
             testSelectorIsUnique(doc, el, actual)
@@ -135,7 +135,7 @@ describe("getPath", () => {
                 "</html>"
             const doc = (new jsdom.JSDOM(html)).window.document
 
-            const el = doc.getElementsByTagName("ul")[0]
+            const el = doc.querySelector("ul")
             const actual = getPath(el)
             expect(actual).toBe("body ul#list.items")
             testSelectorIsUnique(doc, el, actual)
@@ -155,7 +155,7 @@ describe("getPath", () => {
                 "</html>"
             const doc = (new jsdom.JSDOM(html)).window.document
 
-            const el = doc.getElementsByTagName("li")[0]
+            const el = doc.querySelector("li")
             const actual = getPath(el)
             expect(actual).toBe("body ul.items li:first-child")
             testSelectorIsUnique(doc, el, actual)
@@ -175,7 +175,7 @@ describe("getPath", () => {
                 "</html>"
             const doc = (new jsdom.JSDOM(html)).window.document
 
-            const el = doc.getElementsByTagName("li")[0]
+            const el = doc.querySelector("li")
             const actual = getPath(el)
             expect(actual).toBe("body ul.items li:first-of-type")
             testSelectorIsUnique(doc, el, actual)
