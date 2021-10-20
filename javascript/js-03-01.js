@@ -29,7 +29,9 @@ getPath = (htmlElement, prev = "") => {
     else {
         const idSelector = htmlElement.id !== "" ? `#${htmlElement.id}` : ""
         if (idSelector !== "" && hasElementUniqueSelector(htmlElement, idSelector)) return `${idSelector} ${prev}`.toLowerCase().trim()
-        const classNameSelector = htmlElement.className !== "" ? `.${htmlElement.className}` : ""
+        const classNameSelector = htmlElement.className !== ""
+            ? `.${htmlElement.className.trim().split(" ").join(".")}`
+            : ""
         // Search for previous tags
         let orderByElements = 0
         let isOneByOne = true

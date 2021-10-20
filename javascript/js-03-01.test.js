@@ -30,6 +30,15 @@ describe("getPath should return", () => {
         expect(actual).toBe("body h1.title")
         testSelectorIsUnique(el, actual)
     })
+    it("path with all class names if exist", () => {
+        document.body.innerHTML = "\n" +
+            "  <h1 class='title main'>Header</h1>\n" +
+            "  <p id='p1'>Abc</p>\n"
+        const el = document.querySelector("h1")
+        const actual = getPath(el)
+        expect(actual).toBe("body h1.title.main")
+        testSelectorIsUnique(el, actual)
+    })
     it("path with only id if there is the unique id", () => {
         document.body.innerHTML = "\n" +
             "  <p id='p1'>Abc</p>\n"
