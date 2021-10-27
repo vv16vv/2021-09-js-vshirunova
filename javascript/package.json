@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "tree": "node js-04-01.runner.js",
     "test": "jest"
   },
   "author": "Viktoria Shirunova",
