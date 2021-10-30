@@ -14,7 +14,7 @@ const processFolder = async (localPath, parent) => {
                 })
             }
         }
-        return Promise.resolve(parent)
+        return parent
     } catch (e) {
         console.error(e.message)
         process.exit(-1)
