@@ -1,0 +1,10 @@
+const FILES = "files"
+const FILENAME = "generated.txt"
+const MIN_NUMBER = 0
+const MAX_NUMBER = 100000
+const SRC_FILE_CAPACITY = 104857600 // ~100MB
+const DST_FILE_CAPACITY = 50 * 1024 // ~50KB
+
+module.exports = {
+    FILES, FILENAME, MIN_NUMBER, MAX_NUMBER, SRC_FILE_CAPACITY, DST_FILE_CAPACITY
+}
