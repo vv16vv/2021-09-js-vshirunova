@@ -1,7 +1,7 @@
 const {createWriteStream} = require("fs")
 const {once} = require("events")
 const {sep} = require("path")
-const consts = require("js-05-01.const")
+const consts = require("./js-05-01.const")
 
 const args = process.argv.slice(2)
 
