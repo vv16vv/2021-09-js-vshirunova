@@ -1,6 +1,7 @@
-const {createWriteStream} = require("fs")
+const {open, mkdir} = require("fs/promises");
 const {once} = require("events")
 const {sep} = require("path")
+
 const consts = require("./js-05-01.const")
 
 const args = process.argv.slice(2)
@@ -10,8 +11,11 @@ const nextRandomNumber = (minNumber, maxNumber) => {
 }
 
 const generator = async (fileName, minNumber, maxNumber, capacity) => {
-    const maxBuffer = 1024 * 1024
-    const file = createWriteStream(`files${sep}${fileName}`, {highWaterMark: Math.min(maxBuffer, capacity)})
+    await mkdir(consts.FILES, {recursive: true})
+
+    const dstFileName = `${consts.FILES}${sep}${fileName}`
+    const dstHandler = await open(dstFileName, 'w')
+    const file = dstHandler.createWriteStream()
 
     let canWrite = true
     let remainder = capacity
