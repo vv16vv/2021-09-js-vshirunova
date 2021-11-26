@@ -6,6 +6,7 @@ const path = require("path")
 const finishedPromise = util.promisify(finished)
 
 const {Buffer2Number} = require("./js-05-01.Buffer2Number")
+const consts = require("./js-05-01.const");
 
 const merger2files = async (fileName1, fileName2, outputFileName) => {
     const srcFile1 = await open(fileName1, 'r')
@@ -26,8 +27,11 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
     const r1 = source1.pipe(transformer1)
     const r2 = source2.pipe(transformer2)
 
+    let isR1Finished = false
+    let isR2Finished = false
+
     const write = async (data) => {
-        const canWrite = dst.write(data);
+        const canWrite = dst.write(`${data}${consts.NUMBER_SEPARATOR}`);
         if (!canWrite) {
             dst.removeAllListeners("drain")
             dst.once("drain", () => write(data))
@@ -40,56 +44,60 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
             return
         }
         if (curr1 === null) {
-            // первый поток закончился
-            if (curr2 !== null) await write(`${curr2} `)
+            if (curr2 !== null) await write(curr2)
             curr2 = null
-            if (!r2.isFinished()) r2.resume()
+            if (!isR2Finished) await r2.resume()
+            else {
+                if (!dst.writableEnded) await dst.end()
+            }
             return
         }
         if (curr2 === null) {
-            // второй поток закончился
-            await write(`${curr1} `)
+            await write(curr1)
             curr1 = null
-            if(!r1.isFinished()) r1.resume()
+            if (!isR1Finished) r1.resume()
+            else {
+                if (!dst.writableEnded) await dst.end()
+            }
             return
         }
         if (+curr1 <= +curr2) {
-            await write(`${curr1} `)
+            await write(curr1)
             curr1 = null
-            if(r1.isFinished()) {
-                await write(`${curr2} `)
-                curr2 = null
-                r2.resume()
-                return
-            }
-            else r1.resume()
+            if (isR1Finished && !isR2Finished) await r2.resume()
+            else await r1.resume()
         } else {
-            await write(`${curr2} `)
+            await write(curr2)
             curr2 = null
-            if(r2.isFinished()) {
-                await write(`${curr1} `)
-                curr1 = null
-                r1.resume()
-                return
-            }
-            else r2.resume()
-        }
-        if (r1.isFinished() && r2.isFinished()) {
-            // оба потока закончились
-            dst.end()
+            if (isR2Finished && !isR1Finished) await r1.resume()
+            else await r2.resume()
         }
     }
 
     r1.on("data", async chunk => {
         curr1 = chunk?.toString() ?? null
-        r1.pause()
+        await r1.pause()
         await processData()
     })
 
-    r2.on("data", chunk => {
+    r2.on("data", async chunk => {
         curr2 = chunk?.toString() ?? null
-        r2.pause()
+        await r2.pause()
         await processData()
+    })
+
+    r1.on("end", async () => {
+        isR1Finished = true
+        if (!isR2Finished) {
+            await processData()
+        }
+    })
+
+    r2.on("end", async () => {
+        isR2Finished = true
+        if (!isR1Finished) {
+            await processData()
+        }
     })
 
     await finishedPromise(r1)
