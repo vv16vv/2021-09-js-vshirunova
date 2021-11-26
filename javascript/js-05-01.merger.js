@@ -8,6 +8,10 @@ const finishedPromise = util.promisify(finished)
 const {Buffer2Number} = require("./js-05-01.Buffer2Number")
 const consts = require("./js-05-01.const");
 
+let countR1 = 0
+let countR2 = 0
+let countW = 0
+
 const merger2files = async (fileName1, fileName2, outputFileName) => {
     const srcFile1 = await open(fileName1, 'r')
     const srcFile2 = await open(fileName2, 'r')
@@ -32,6 +36,7 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
 
     const write = async (data) => {
         const canWrite = dst.write(`${data}${consts.NUMBER_SEPARATOR}`);
+        countW++
         if (!canWrite) {
             dst.removeAllListeners("drain")
             dst.once("drain", () => write(data))
@@ -75,12 +80,14 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
     }
 
     r1.on("data", async chunk => {
+        countR1++
         curr1 = chunk?.toString() ?? null
         await r1.pause()
         await processData()
     })
 
     r2.on("data", async chunk => {
+        countR2++
         curr2 = chunk?.toString() ?? null
         await r2.pause()
         await processData()
@@ -105,7 +112,7 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
     await finishedPromise(dst)
 }
 
-(async () => {
+const testMerger = async () => {
     const label = "merger2files"
     console.time(label)
     await merger2files(
@@ -113,6 +120,10 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
         `files${path.sep}generated.00002.txt`,
         `files${path.sep}output.txt`,
     )
-    console.timeLog(label)
     console.timeEnd(label)
-})()
+    console.log(`Слияние: первый файл = ${countR1} чисел, второй файл = ${countR2} чисел, итоговый файл = ${countW} чисел`)
+}
+
+module.exports = {
+    merger2files,
+}
