@@ -1,4 +1,5 @@
 const {createReadStream, createWriteStream} = require("fs")
+const consts = require("./js-05-01.const");
 
 async function sorter(fileName) {
     return new Promise(((resolve, reject) => {
@@ -7,7 +8,7 @@ async function sorter(fileName) {
         source.on("data", chunk => {
             data = data.concat(
                 chunk.toString()
-                    .split(" ")
+                    .split(consts.NUMBER_SEPARATOR)
                     .map(s => +s),
             )
         })

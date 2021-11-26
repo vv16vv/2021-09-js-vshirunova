@@ -21,7 +21,7 @@ const generator = async (fileName, minNumber, maxNumber, capacity) => {
     let remainder = capacity
 
     while (remainder > 0) {
-        const newNumber = `${nextRandomNumber(minNumber, maxNumber)} `
+        const newNumber = `${nextRandomNumber(minNumber, maxNumber)}${consts.NUMBER_SEPARATOR}`
         remainder -= newNumber.length
 
         canWrite = file.write(Buffer.from(newNumber, 'utf8'))

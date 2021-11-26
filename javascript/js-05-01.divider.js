@@ -2,6 +2,7 @@ const path = require("path")
 const {createReadStream, createWriteStream} = require("fs")
 
 const utils = require("./js-05-01.const")
+const consts = require("./js-05-01.const");
 
 // srcFileName - имя исходного большого файла.
 // dstCapacity - примерный размер файлов, на которые будет нарезан исходный.
@@ -15,7 +16,7 @@ const divider = async (srcFileName, dstCapacity) => {
             if (data !== null) {
                 counter++
                 const target = createWriteStream(utils.getFileName(srcFileName, counter))
-                const lastSpace = data.lastIndexOf(" ")
+                const lastSpace = data.lastIndexOf(consts.NUMBER_SEPARATOR)
                 target.end(prev + data.slice(0, lastSpace))
                 prev = data.slice(lastSpace + 1)
             }

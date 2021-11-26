@@ -1,4 +1,5 @@
 const {Duplex} = require("stream")
+const consts = require("./js-05-01.const");
 
 class Buffer2Number extends Duplex {
     constructor(options = {
@@ -18,9 +19,9 @@ class Buffer2Number extends Duplex {
     _write(chunk, encoding, callback) {
         if (chunk !== null) {
             const data = chunk.toString()
-            const lastSpace = data.lastIndexOf(" ")
+            const lastSpace = data.lastIndexOf(consts.NUMBER_SEPARATOR)
             this._numbers = this._numbers
-                .concat((this._prev + data.slice(0, lastSpace)).split(" "))
+                .concat((this._prev + data.slice(0, lastSpace)).split(consts.NUMBER_SEPARATOR))
             this._prev = data.slice(lastSpace + 1)
         }
         while (this._numbers.length > 0) {
@@ -34,7 +35,7 @@ class Buffer2Number extends Duplex {
 
     _final(callback) {
         if (this._prev !== "") {
-            this._numbers = this._numbers.concat(this._prev.split(" "))
+            this._numbers = this._numbers.concat(this._prev.split(consts.NUMBER_SEPARATOR))
             this._prev = ""
         }
         while (this._numbers.length > 0) {

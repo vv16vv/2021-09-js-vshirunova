@@ -1,6 +1,7 @@
 const path = require("path")
 const FILES = "files"
 const FILENAME = "generated.txt"
+const NUMBER_SEPARATOR = " "
 const MIN_NUMBER = 0
 const MAX_NUMBER = 100000
 const SRC_FILE_CAPACITY = 104857600 // ~100MB
@@ -12,5 +13,5 @@ const getFileName = (name, order) => {
 }
 
 module.exports = {
-    FILES, FILENAME, MIN_NUMBER, MAX_NUMBER, SRC_FILE_CAPACITY, DST_FILE_CAPACITY, getFileName
+    FILES, FILENAME, NUMBER_SEPARATOR, MIN_NUMBER, MAX_NUMBER, SRC_FILE_CAPACITY, DST_FILE_CAPACITY, getFileName
 }
