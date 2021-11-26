@@ -1,6 +1,7 @@
 const {open} = require("fs/promises")
 const {finished} = require("stream")
 const util = require("util")
+const path = require("path")
 
 const finishedPromise = util.promisify(finished)
 
@@ -25,58 +26,48 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
     const r1 = source1.pipe(transformer1)
     const r2 = source2.pipe(transformer2)
 
-    const drain = new Promise(((resolve, reject) => {
-        dst.on("drain", (err) => {
-            if(err) reject(err)
-            else resolve()
-        })
-    }))
-
     const write = async (data) => {
         const canWrite = dst.write(data);
-        if(!canWrite) {
-            await drain
+        if (!canWrite) {
+            dst.removeAllListeners("drain")
+            dst.once("drain", () => write(data))
         }
     }
 
-    const process = () => {
-        if(curr1 === undefined || curr2 === undefined){
+    const processData = async () => {
+        if (curr1 === undefined || curr2 === undefined) {
             // хотя бы один поток еще не прочитал данные
             return
         }
-        if(curr1 === null) {
+        if (curr1 === null) {
             // первый поток закончился
-            if(curr2 !== null) write(`${curr2} `)
-            // r2.pipe(dst)
+            if (curr2 !== null) await write(`${curr2} `)
             curr2 = null
-            if(!r2.isFinished()) r2.resume()
+            if (!r2.isFinished()) r2.resume()
             return
         }
-        if(curr2 === null) {
+        if (curr2 === null) {
             // второй поток закончился
-            write(`${curr1} `)
-            // r2.pipe(dst)
+            await write(`${curr1} `)
             curr1 = null
             if(!r1.isFinished()) r1.resume()
             return
         }
         if (+curr1 <= +curr2) {
-            write(`${curr1} `)
+            await write(`${curr1} `)
             curr1 = null
             if(r1.isFinished()) {
-                write(`${curr2} `)
-                // r2.pipe(dst)
+                await write(`${curr2} `)
                 curr2 = null
                 r2.resume()
                 return
             }
             else r1.resume()
         } else {
-            write(`${curr2} `)
+            await write(`${curr2} `)
             curr2 = null
             if(r2.isFinished()) {
-                write(`${curr1} `)
-                // r1.pipe(dst)
+                await write(`${curr1} `)
                 curr1 = null
                 r1.resume()
                 return
@@ -89,16 +80,16 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
         }
     }
 
-    r1.on("data", chunk => {
+    r1.on("data", async chunk => {
         curr1 = chunk?.toString() ?? null
         r1.pause()
-        process()
+        await processData()
     })
 
     r2.on("data", chunk => {
         curr2 = chunk?.toString() ?? null
         r2.pause()
-        process()
+        await processData()
     })
 
     await finishedPromise(r1)
@@ -110,9 +101,10 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
     const label = "merger2files"
     console.time(label)
     await merger2files(
-        "files\\generated.00001.txt",
-        "files\\generated.00002.txt",
-        "files\\output.txt",
+        `files${path.sep}generated.00001.txt`,
+        `files${path.sep}generated.00002.txt`,
+        `files${path.sep}output.txt`,
     )
+    console.timeLog(label)
     console.timeEnd(label)
 })()
