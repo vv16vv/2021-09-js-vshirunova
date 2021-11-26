@@ -1,7 +1,7 @@
-const {Duplex} = require("stream")
+const {Transform} = require("stream")
 const consts = require("./js-05-01.const");
 
-class Buffer2Number extends Duplex {
+class Buffer2Number extends Transform {
     constructor(options = {
         writableObjectMode: true
     }) {
@@ -9,14 +9,9 @@ class Buffer2Number extends Duplex {
 
         this._prev = ""
         this._numbers = []
-        this._isFinished = false
     }
 
-    isFinished() {
-        return this._isFinished
-    }
-
-    _write(chunk, encoding, callback) {
+    _transform(chunk, encoding, callback) {
         if (chunk !== null) {
             const data = chunk.toString()
             const lastSpace = data.lastIndexOf(consts.NUMBER_SEPARATOR)
@@ -30,10 +25,7 @@ class Buffer2Number extends Duplex {
         callback()
     }
 
-    _read(size = 1) {
-    }
-
-    _final(callback) {
+    _flush(callback) {
         if (this._prev !== "") {
             this._numbers = this._numbers.concat(this._prev.split(consts.NUMBER_SEPARATOR))
             this._prev = ""
@@ -41,7 +33,6 @@ class Buffer2Number extends Duplex {
         while (this._numbers.length > 0) {
             this.push(this._numbers.shift())
         }
-        this._isFinished = true
         callback()
     }
 }
