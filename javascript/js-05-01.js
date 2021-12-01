@@ -27,9 +27,12 @@
 $ node --max-old-space-size=50 script.js
 * */
 
+const {renameSync, rmSync} = require("fs");
+
 const utils = require("./js-05-01.const");
 const {sorter} = require("./js-05-01.sorter");
 const {divider} = require("./js-05-01.divider");
+const {merger2files} = require("./js-05-01.merger");
 
 (async (fileName) => {
     const label = "divider"
@@ -51,5 +54,34 @@ const {divider} = require("./js-05-01.divider");
     }
     await chain
     console.log('Частичные файлы отсортированы')
+    console.timeLog(label)
+
+    let firstFile = utils.getFileName(fileName, 1)
+    const resultFile = utils.getResultFileName(fileName)
+    let outputFile;
+
+    process.on("uncaughtException", err => console.error(err))
+    process.on("unhandledRejection", err => console.error(err))
+
+    for (let key = 2; key <= counter; key++) {
+        const secondFile = utils.getFileName(fileName, key)
+        outputFile = utils.getTempFileName(key)
+        console.log(`key=${key}: Going to merge '${firstFile}' and '${secondFile}' to '${outputFile}'`)
+        try {
+            await merger2files(firstFile, secondFile, outputFile)
+        } catch (err) {
+            console.error(`Failed: ${err}`)
+        }
+        rmSync(firstFile, {force: true})
+        rmSync(secondFile, {force: true})
+        if (key > 3) {
+            rmSync(utils.getTempFileName(key - 1), {force: true})
+        }
+        firstFile = outputFile
+        console.log(`key=${key} end of cycle`)
+    }
+
+    renameSync(outputFile, resultFile)
+
     console.timeEnd(label)
 })(utils.FILENAME)
