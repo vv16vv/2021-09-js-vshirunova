@@ -1,7 +1,6 @@
 const {open} = require("fs/promises")
 const {finished} = require("stream")
 const util = require("util")
-const path = require("path")
 
 const finishedPromise = util.promisify(finished)
 
@@ -120,13 +119,15 @@ const testMerger = async () => {
     const label = "merger2files"
     console.time(label)
     await merger2files(
-        `files${path.sep}generated.00001.txt`,
-        `files${path.sep}generated.00002.txt`,
-        `files${path.sep}output.txt`,
+        consts.getFileName(consts.FILENAME, 1),
+        consts.getFileName(consts.FILENAME, 2),
+        consts.getTempFileName(),
     )
     console.timeEnd(label)
     console.log(`Слияние: первый файл = ${countR1} чисел, второй файл = ${countR2} чисел, итоговый файл = ${countW} чисел`)
 }
+
+// testMerger()
 
 module.exports = {
     merger2files,
