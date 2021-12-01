@@ -9,9 +9,21 @@ const DST_FILE_CAPACITY = 50 * 1024 // ~50KB
 
 const getFileName = (name, order) => {
     const srcObject = path.parse(name)
-    return `${FILES}${path.sep}${srcObject.name}.${("00000" + order).slice(-5)}${srcObject.ext}`
+    return `./${FILES}${path.sep}${srcObject.name}.${("00000" + order).slice(-5)}${srcObject.ext}`
+}
+
+const getResultFileName = (name) => {
+    const srcObject = path.parse(name)
+    return `./${FILES}${path.sep}${srcObject.name}.result${srcObject.ext}`
+}
+
+const getTempFileName = () => {
+    return `./${FILES}${path.sep}output.txt`
 }
 
 module.exports = {
-    FILES, FILENAME, NUMBER_SEPARATOR, MIN_NUMBER, MAX_NUMBER, SRC_FILE_CAPACITY, DST_FILE_CAPACITY, getFileName
+    FILES, FILENAME, NUMBER_SEPARATOR,
+    MIN_NUMBER, MAX_NUMBER,
+    SRC_FILE_CAPACITY, DST_FILE_CAPACITY,
+    getFileName, getResultFileName, getTempFileName
 }
