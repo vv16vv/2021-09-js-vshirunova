@@ -17,8 +17,9 @@ const getResultFileName = (name) => {
     return `./${FILES}${path.sep}${srcObject.name}.result${srcObject.ext}`
 }
 
-const getTempFileName = () => {
-    return `./${FILES}${path.sep}output.txt`
+const getTempFileName = (order) => {
+    const orderString = order !== undefined ? `.${("00000" + order).slice(-5)}` : ""
+    return `./${FILES}${path.sep}output${orderString}.txt`
 }
 
 module.exports = {
