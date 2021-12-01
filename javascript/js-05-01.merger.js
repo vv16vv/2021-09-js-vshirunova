@@ -110,6 +110,10 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
     await finishedPromise(r1)
     await finishedPromise(r2)
     await finishedPromise(dst)
+
+    await srcFile1.close()
+    await srcFile2.close()
+    await dstFile.close()
 }
 
 const testMerger = async () => {
