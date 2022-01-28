@@ -1,8 +1,5 @@
 const {open} = require("fs/promises")
-const {finished} = require("stream")
-const util = require("util")
-
-const finishedPromise = util.promisify(finished)
+const {finished} = require("stream/promises")
 
 const {Buffer2Number} = require("./js-05-01.Buffer2Number")
 const consts = require("./js-05-01.const");
@@ -33,7 +30,7 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
     let isR1Finished = false
     let isR2Finished = false
 
-    const write = async (data) => {
+    const write = (data) => {
         const canWrite = dst.write(`${data}${consts.NUMBER_SEPARATOR}`);
         countW++
         if (!canWrite) {
@@ -42,73 +39,76 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
         }
     }
 
-    const processData = async () => {
+    const processData = () => {
         if (curr1 === undefined || curr2 === undefined) {
             // хотя бы один поток еще не прочитал данные
             return
         }
-        if (curr1 === null) {
-            if (curr2 !== null) await write(curr2)
+        if (curr1 === null) { // либо в последний раз мы читали из потока 1, либо поток 1 закончился
+            if (curr2 !== null) write(curr2)
             curr2 = null
-            if (!isR2Finished) await r2.resume()
+            if (!isR2Finished) r2.resume()
             else {
-                if (!dst.writableEnded) await dst.end()
+                if (isR1Finished && isR2Finished && !dst.writableEnded) dst.end()
             }
             return
         }
         if (curr2 === null) {
-            await write(curr1)
+            write(curr1)
             curr1 = null
             if (!isR1Finished) r1.resume()
             else {
-                if (!dst.writableEnded) await dst.end()
+                if (isR1Finished && isR2Finished && !dst.writableEnded) dst.end()
             }
             return
         }
         if (+curr1 <= +curr2) {
-            await write(curr1)
+            write(curr1)
             curr1 = null
-            if (isR1Finished && !isR2Finished) await r2.resume()
-            else await r1.resume()
+            if (isR1Finished && !isR2Finished) r2.resume()
+            else r1.resume()
         } else {
-            await write(curr2)
+            write(curr2)
             curr2 = null
-            if (isR2Finished && !isR1Finished) await r1.resume()
-            else await r2.resume()
+            if (isR2Finished && !isR1Finished) r1.resume()
+            else r2.resume()
         }
     }
 
-    r1.on("data", async chunk => {
+    r1.on("data", chunk => {
         countR1++
         curr1 = chunk?.toString() ?? null
-        await r1.pause()
-        await processData()
+        r1.pause()
+        if(curr1 !== null) {
+            processData()
+        }
     })
 
-    r2.on("data", async chunk => {
+    r2.on("data", chunk => {
         countR2++
         curr2 = chunk?.toString() ?? null
-        await r2.pause()
-        await processData()
+        r2.pause()
+        if(curr2 !== null) {
+            processData()
+        }
     })
 
-    r1.on("end", async () => {
+    r1.on("end", () => {
         isR1Finished = true
         if (!isR2Finished) {
-            await processData()
+            processData()
         }
     })
 
-    r2.on("end", async () => {
+    r2.on("end", () => {
         isR2Finished = true
         if (!isR1Finished) {
-            await processData()
+            processData()
         }
     })
 
-    await finishedPromise(r1)
-    await finishedPromise(r2)
-    await finishedPromise(dst)
+    await finished(r1)
+    await finished(r2)
 
     await srcFile1.close()
     await srcFile2.close()
