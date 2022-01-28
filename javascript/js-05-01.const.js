@@ -5,7 +5,7 @@ const NUMBER_SEPARATOR = " "
 const MIN_NUMBER = 0
 const MAX_NUMBER = 100000
 const SRC_FILE_CAPACITY = 104857600 // ~100MB
-const DST_FILE_CAPACITY = 50 * 1024 // ~50KB
+const DST_FILE_CAPACITY = 10485761 // ~10MB
 
 const getFileName = (name, order) => {
     const srcObject = path.parse(name)
