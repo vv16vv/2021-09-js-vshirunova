@@ -29,6 +29,8 @@ const generator = async (fileName, minNumber, maxNumber, capacity) => {
             await once(file, 'drain')
         }
     }
+
+    return dstFileName
 }
 
 (async (args) => {
@@ -40,7 +42,7 @@ const generator = async (fileName, minNumber, maxNumber, capacity) => {
     const capacity = args.length >= 4 ? args[3] : consts.SRC_FILE_CAPACITY
 
     console.time(label)
-    await generator(fileName, minNumber, maxNumber, capacity)
-    console.timeLog("generator")
+    const generated = await generator(fileName, minNumber, maxNumber, capacity)
     console.timeEnd(label)
+    console.log(`File '${generated}' generated`)
 })(args)
