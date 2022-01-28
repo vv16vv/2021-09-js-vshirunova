@@ -49,7 +49,7 @@ const {divider} = require("./js-05-01.divider");
 const {merger2files} = require("./js-05-01.merger");
 
 (async (fileName) => {
-    const label = "divider"
+    const label = "merger"
 
     // Нарезка исходного файла ~ 1.112 sec
     console.time(label)
@@ -83,14 +83,12 @@ const {merger2files} = require("./js-05-01.merger");
         console.log(`key=${key}: Going to merge '${firstFile}' and '${secondFile}' to '${outputFile}'`)
         try {
             await merger2files(firstFile, secondFile, outputFile)
+            console.timeLog(label)
         } catch (err) {
             console.error(`Failed: ${err}`)
         }
         rmSync(firstFile, {force: true})
         rmSync(secondFile, {force: true})
-        if (key > 3) {
-            rmSync(utils.getTempFileName(key - 1), {force: true})
-        }
         firstFile = outputFile
         console.log(`key=${key} end of cycle`)
     }
