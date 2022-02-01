@@ -10,7 +10,7 @@ class File {
     constructor(srcFile, n) {
         this.n = n
         this.srcFile = srcFile
-        this.source = srcFile.createReadStream()
+        this.source = srcFile.createReadStream({highWaterMark: consts.WATERMARK})
         this.transformer = new Buffer2Number()
         this.r = this.source.pipe(this.transformer)
 
@@ -54,11 +54,7 @@ const processData = (files, dst) => {
     // из какого потока сейчас будем брать число
     // stillRunningFiles всегда имеет как минимум 1 поток
     const sorted = stillRunningFiles
-        .sort((f1, f2) => {
-            if (f1.curr < f2.curr) return -1
-            else if (f1.curr > f2.curr) return 1
-            else return 0
-        })
+        .sort((f1, f2) => f1.curr - f2.curr)
 
     sorted
         // в нулевом элементе лежит кандидат на запись
@@ -106,7 +102,7 @@ const mergerNFiles = async (fileNames, outputFileName) => {
     }
 
     const dstFile = await open(outputFileName, 'w')
-    const dst = dstFile.createWriteStream({highWaterMark: consts.DST_FILE_CAPACITY, autoClose: true})
+    const dst = dstFile.createWriteStream({highWaterMark: consts.WATERMARK, autoClose: true})
 
     sources.forEach(source => {
         source.r.on("data", chunk => {

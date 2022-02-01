@@ -27,49 +27,19 @@
 $ node --max-old-space-size=50 script.js
 * */
 
-/*
-* Как запускать:
-* запустить файл js-05-01.generator.js чтобы сгенерировать большой файл
-* запустить файл js-05-01.js - он разрежет большой файл на кусочки, отсортирует эти кусочки,
-* а потом будет сливать их в один файл.
-*
-* Проблема:
-* При сливании файла на второй итерации программа падает без каких-либо эксепшенов.
-* Падение происходит на строчке 112 в файле js-05-01.merger.js - await finishedPromise(dst)
-* на ожидании, когда закончится запись в выходной поток.
-* Запуск отдельно взятого merger с любыми парами файлов отрабатывает нормально.
-* Проблема воспроизводится только при общем запуске.
-* */
+const {rmSync} = require("fs");
 
-const utils = require("./js-05-01.const");
-const {sorter} = require("./js-05-01.sorter");
-const {divider} = require("./js-05-01.divider");
+const utils = require("./js-05-01.const")
+const {divider} = require("./js-05-01.divider")
 const {mergerNFiles} = require("./js-05-01.n-merger");
 
 (async (fileName) => {
     const label = "merger"
 
-    // Нарезка исходного файла ~ 1.112 sec
     console.time(label)
     const counter = await divider(fileName, utils.DST_FILE_CAPACITY)
     console.log(`Исходный файл разрезан на ${counter} небольших файлов`)
     console.timeLog(label)
-
-    // Сортировка частей ~13.523 sec - так долго,
-    // т.к. файлы сортируются последовательно, чтобы уложиться
-    // в ограниченную память
-    let chain = Promise.resolve()
-    for (let key = 1; key <= counter; key++) {
-        chain = chain
-            .then(() => sorter(utils.getFileName(fileName, key)))
-            .catch(err => console.error(`Failed: ${err}`))
-    }
-    await chain
-    console.log('Частичные файлы отсортированы')
-    console.timeLog(label)
-
-    process.on("uncaughtException", err => console.error(err))
-    process.on("unhandledRejection", err => console.error(err))
 
     const fileNames = []
     for (let i = 0; i < counter; i++) {
@@ -78,6 +48,13 @@ const {mergerNFiles} = require("./js-05-01.n-merger");
 
     const resultFile = utils.getResultFileName(fileName)
     await mergerNFiles(fileNames, resultFile)
+    console.log(`Промежуточные файлы слиты в один`)
+    console.timeLog(label)
+
+    for (let i = 0; i < counter; i++) {
+        rmSync(utils.getFileName(fileName, i + 1), {force: true})
+    }
+    console.log(`Промежуточные файлы удалены`)
 
     console.timeEnd(label)
 })(utils.FILENAME)
