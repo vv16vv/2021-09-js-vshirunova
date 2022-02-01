@@ -17,7 +17,11 @@ const divider = async (srcFileName, dstCapacity) => {
                 counter++
                 const target = createWriteStream(utils.getFileName(srcFileName, counter))
                 const lastSpace = data.lastIndexOf(consts.NUMBER_SEPARATOR)
-                target.end(prev + data.slice(0, lastSpace))
+                const numbers = (prev + data.slice(0, lastSpace))
+                    .split(consts.NUMBER_SEPARATOR)
+                    .sort((a, b) => +a - +b)
+                    .join(consts.NUMBER_SEPARATOR)
+                target.end(numbers)
                 prev = data.slice(lastSpace + 1)
             }
         })
