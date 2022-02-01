@@ -14,11 +14,7 @@ async function sorter(fileName) {
                     .split(consts.NUMBER_SEPARATOR)
                     .filter(s => s !== "")
                     .map(s => +s)
-                    .sort((a, b) => {
-                        if (a < b) return -1
-                        else if (a > b) return 1
-                        else return 0
-                    })
+                    .sort((a, b) => a - b)
                     .forEach(n => {
                         const canWrite = dst.write(`${n}${consts.NUMBER_SEPARATOR}`, 'utf8')
                         if (!canWrite) {
