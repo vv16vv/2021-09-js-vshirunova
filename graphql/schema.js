@@ -5,7 +5,7 @@ const {
     GraphQLInt,
     GraphQLNonNull,
     GraphQLObjectType,
-    GraphQLString, GraphQLList, GraphQLSchema, GraphQLEnumType,
+    GraphQLString, GraphQLList, GraphQLSchema, GraphQLEnumType, GraphQLInputObjectType,
 } = require('graphql')
 const _ = require("lodash")
 
@@ -14,6 +14,10 @@ const items = require("./data/items")
 const storage = require("./data/storage")
 const customers = require("./data/customers")
 const orders = require("./data/orders")
+
+const nextId = (table) => {
+    return (_.max(table.map(t => +t.id)) + 1).toString()
+}
 
 const Category = new GraphQLObjectType({
     name: "category",
@@ -33,6 +37,15 @@ const Item = new GraphQLObjectType({
                 return _.find(categories, {id: parent.categoryId})
             },
         },
+        name: {type: GraphQLString},
+        price: {type: GraphQLFloat},
+    },
+})
+
+const ItemInput = new GraphQLInputObjectType({
+    name: "itemInput",
+    fields: {
+        categoryId: {type: GraphQLString},
         name: {type: GraphQLString},
         price: {type: GraphQLFloat},
     },
@@ -128,6 +141,23 @@ const Customer = new GraphQLObjectType({
     },
 })
 
+const CustomerInput = new GraphQLInputObjectType({
+    name: "customerInput",
+    fields: {
+        name: {type: GraphQLString},
+        address: {type: GraphQLString},
+    },
+})
+
+const StorageInput = new GraphQLInputObjectType({
+    name: "storageInput",
+    fields: {
+        customerId: {type: GraphQLString},
+        itemId: {type: GraphQLString},
+        quantity: {type: GraphQLInt}
+    }
+})
+
 const zooSchema = new GraphQLSchema({
     query: new GraphQLObjectType({
         name: 'ZooQuery',
@@ -193,6 +223,75 @@ const zooSchema = new GraphQLSchema({
             },
         },
     }),
+    mutation: new GraphQLObjectType({
+        name: "ZooMutation",
+        fields: {
+            addCustomer: {
+                type: GraphQLString,
+                args: {
+                    newCustomer: {type: new GraphQLNonNull(CustomerInput)}
+                },
+                resolve: (source, {newCustomer}) => {
+                    newCustomer.id = nextId(customers)
+                    customers.push(newCustomer)
+                    return `added with id=${newCustomer.id}`
+                }
+            },
+            addItem: {
+                type: GraphQLString,
+                args: {
+                    newItem: {type: new GraphQLNonNull(ItemInput)}
+                },
+                resolve: (source, {newItem}) => {
+                    newItem.id = nextId(items)
+                    items.push(newItem)
+                    return `added with id=${newItem.id}`
+                }
+            },
+            addItemToOrder: {
+                type: GraphQLString,
+                args: {
+                    addedItem: {type: new GraphQLNonNull(StorageInput)}
+                },
+                resolve: (source, {addedItem}) => {
+                    // if the customer doesn't have an opened order, let's create one
+                    let currentOrder = _.find(orders, {customerId: addedItem.customerId, isClosed: false})
+                    let message = "order "
+                    if(currentOrder === undefined) {
+                        currentOrder = {
+                            id: nextId(orders),
+                            customerId: addedItem.customerId,
+                            date: new Date(),
+                            isClosed: false
+                        }
+                        orders.push(currentOrder)
+                        message += `${currentOrder.id} created`
+                    } else {
+                        message += `${currentOrder.id} found`
+                    }
+
+                    const storageItem = {
+                        id: nextId(storage),
+                        type: "-",
+                        orderId: currentOrder.id,
+                        itemId: addedItem.itemId,
+                        quantity: addedItem.quantity
+                    }
+                    storage.push(storageItem)
+                    return message
+                }
+            },
+            closeOrder: {
+                type: GraphQLString,
+                args: {customerId: {type: GraphQLString}},
+                resolve: (source, {customerId}) => {
+                    const order = _.find(orders, {customerId: customerId, isClosed: false})
+                    order.isClosed = true
+                    return `Order ${order.id} is closed`
+                }
+            }
+        }
+    })
 })
 
 module.exports = {
