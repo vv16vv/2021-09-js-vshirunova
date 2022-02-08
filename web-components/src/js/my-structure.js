@@ -4,17 +4,16 @@ class MyStructure extends HTMLElement {
     }
 
     attributeChangedCallback(name, oldValue, newValue) {
-        console.log(`MyStructure: attributeChangedCallback: name=${name}, oldValue=${oldValue}, newValue=${newValue}`)
         this._tree = JSON.parse(newValue)
 
         const strName = this._tree.name
         const strItems = this._tree.items
 
-        const folder = document.createElement("my-folder")
-        folder.setAttribute(NAME, strName)
-        folder.setAttribute(ITEMS, JSON.stringify(strItems))
+        const subtree = document.createElement("my-tree")
+        subtree.setAttribute(NAME, strName)
+        subtree.setAttribute(ITEMS, JSON.stringify(strItems))
         
-        this._treeElement.append(folder)
+        this._treeElement.append(subtree)
     }
 
     constructor() {
@@ -25,12 +24,10 @@ class MyStructure extends HTMLElement {
     }
 
     get tree() {
-        console.log(`get tree`)
         return this._tree
     }
 
     set tree(tree) {
-        console.log(`set tree`)
         this.setAttribute(TREE, tree)
     }
 }

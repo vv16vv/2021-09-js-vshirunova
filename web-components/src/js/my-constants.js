@@ -31,14 +31,14 @@ structure.innerHTML = `
     </section>
 `
 
-const folder = document.createElement("template")
-folder.innerHTML = `
+const tree = document.createElement("template")
+tree.innerHTML = `
     <style>
-        .folder__content {
+        .tree__content {
           ${contentStyle}
         }
     
-        .folder__name {
+        .tree__name {
           position: relative;
           background-color: transparent;
           border: none;
@@ -46,42 +46,42 @@ folder.innerHTML = `
           ${fontStyle}
         }
     
-        .folder__name:hover + .folder__content {
+        .tree__name:hover + .tree__content {
           outline: 1px darkblue solid;
           background-color: rgba(173, 216, 230, 0.33);
         }
     
-        .folder__name:hover {
+        .tree__name:hover {
           color: darkblue;
           cursor: pointer;
           font-weight: bold;
         }
     
-        .folder__name::before {
+        .tree__name::before {
           position: absolute;
         }
     
-        .folder__name--opened + .folder__content {
+        .tree__name--opened + .tree__content {
           display: block;
         }
     
-        .folder__name--closed + .folder__content {
+        .tree__name--closed + .tree__content {
           display: none;
         }
     
-        .folder__name--opened::before {
+        .tree__name--opened::before {
           content: "-";
           left: -0.6em;
         }
     
-        .folder__name--closed::before {
+        .tree__name--closed::before {
           content: "+";
           left: -0.8em;
         }
     </style>
     <li>
-        <button class="folder__name folder__name--opened" type="button"></button>
-        <ul class="folder__content">
+        <button class="tree__name tree__name--opened" type="button"></button>
+        <ul class="tree__content">
         </ul>
     </li>
 `
