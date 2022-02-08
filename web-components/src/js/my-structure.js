@@ -1,35 +1,47 @@
 class MyStructure extends HTMLElement {
-    static get observedAttributes() {
-        return [TREE]
+  static get observedAttributes() {
+    return [TREE]
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    this._reset()
+    try {
+      this._tree = JSON.parse(newValue)
+    } catch (e) {
+      this._tree = null
     }
 
-    attributeChangedCallback(name, oldValue, newValue) {
-        this._tree = JSON.parse(newValue)
+    if(this._tree !== null) {
+      const strName = this._tree.name
+      const strItems = this._tree.items
 
-        const strName = this._tree.name
-        const strItems = this._tree.items
+      const subtree = document.createElement("my-tree")
+      subtree.setAttribute(NAME, strName)
+      subtree.setAttribute(ITEMS, JSON.stringify(strItems))
 
-        const subtree = document.createElement("my-tree")
-        subtree.setAttribute(NAME, strName)
-        subtree.setAttribute(ITEMS, JSON.stringify(strItems))
-        
-        this._treeElement.append(subtree)
+      this._treeElement.append(subtree)
     }
+  }
 
-    constructor() {
-        super()
-        this.attachShadow({mode: "open"})
-        this.shadowRoot.appendChild(structure.content.cloneNode(true))
-        this._treeElement = this.shadowRoot.querySelector('section[name="tree"] > ul')
-    }
+  _reset() {
+    const myTrees = this._treeElement.querySelectorAll("my-tree")
+    myTrees.forEach(tree => tree.remove())
+  }
 
-    get tree() {
-        return this._tree
-    }
+  constructor() {
+    super()
+    this.attachShadow({mode: "open"})
+    this.shadowRoot.appendChild(structure.content.cloneNode(true))
+    this._treeElement = this.shadowRoot.querySelector("section[name=\"tree\"] > ul")
+  }
 
-    set tree(tree) {
-        this.setAttribute(TREE, tree)
-    }
+  get tree() {
+    return this._tree
+  }
+
+  set tree(tree) {
+    this.setAttribute(TREE, tree)
+  }
 }
 
-window.customElements.define('my-structure', MyStructure)
+window.customElements.define("my-structure", MyStructure)
