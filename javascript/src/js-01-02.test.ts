@@ -1,4 +1,4 @@
-const sum = require("./js-01-02")
+import {sum} from "./js-01-02"
 
 describe("sum", () => {
     describe("intermediate call should return function", () => {
