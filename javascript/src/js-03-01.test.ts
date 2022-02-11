@@ -1,9 +1,9 @@
 /**
  * @jest-environment jsdom
  */
-const getPath = require("./js-03-01")
+import {getPath} from "./js-03-01"
 
-const testSelectorIsUnique = ({innerHTML: expectedText}, selector) => {
+const testSelectorIsUnique = ({innerHTML: expectedText}: HTMLElement, selector: string): void => {
     const elements = document.querySelectorAll(selector)
     expect(elements).toHaveLength(1)
 
@@ -16,8 +16,8 @@ describe("getPath should return", () => {
         document.body.innerHTML = "\n" +
             "  <h1>Header</h1>\n" +
             "  <p id='p1'>Abc</p>\n"
-        const el = document.querySelector("body")
-        const actual = getPath(el)
+        const el: HTMLElement = document.querySelector("body")
+        const actual: string = getPath(el)
         expect(actual).toBe("body")
         testSelectorIsUnique(el, actual)
     })
@@ -25,8 +25,8 @@ describe("getPath should return", () => {
         document.body.innerHTML = "\n" +
             "  <h1 class='title'>Header</h1>\n" +
             "  <p id='p1'>Abc</p>\n"
-        const el = document.querySelector("h1")
-        const actual = getPath(el)
+        const el: HTMLElement = document.querySelector("h1")
+        const actual: string = getPath(el)
         expect(actual).toBe("body h1.title")
         testSelectorIsUnique(el, actual)
     })
@@ -34,8 +34,8 @@ describe("getPath should return", () => {
         document.body.innerHTML = "\n" +
             "  <h1 class='title main'>Header</h1>\n" +
             "  <p id='p1'>Abc</p>\n"
-        const el = document.querySelector("h1")
-        const actual = getPath(el)
+        const el: HTMLElement = document.querySelector("h1")
+        const actual: string = getPath(el)
         expect(actual).toBe("body h1.title.main")
         testSelectorIsUnique(el, actual)
     })
@@ -43,8 +43,8 @@ describe("getPath should return", () => {
         document.body.innerHTML = "\n" +
             "  <p id='p1'>Abc</p>\n"
 
-        const el = document.querySelector("p")
-        const actual = getPath(el)
+        const el: HTMLElement = document.querySelector("p")
+        const actual: string = getPath(el)
         expect(actual).toBe("#p1")
         testSelectorIsUnique(el, actual)
     })
@@ -54,8 +54,8 @@ describe("getPath should return", () => {
             "    <p>Abc</p>\n" +
             "  </div>"
 
-        const el = document.querySelector("p")
-        const actual = getPath(el)
+        const el: HTMLElement = document.querySelector("p")
+        const actual: string = getPath(el)
         expect(actual).toBe("#p1 p")
         testSelectorIsUnique(el, actual)
     })
@@ -63,8 +63,8 @@ describe("getPath should return", () => {
         document.body.innerHTML = "\n" +
             "  <p id='p1'>Abc</p>\n" +
             "  <div id='p1'>Des</div>\n"
-        const el = document.querySelector("p")
-        const actual = getPath(el)
+        const el: HTMLElement = document.querySelector("p")
+        const actual: string = getPath(el)
         expect(actual).toBe("body p#p1")
         testSelectorIsUnique(el, actual)
     })
@@ -73,8 +73,8 @@ describe("getPath should return", () => {
             "  <ul id='list' class='items'>" +
             "    <li id='list'>yellow</li>\n" +
             "  </ul>\n"
-        const el = document.querySelector("ul")
-        const actual = getPath(el)
+        const el: HTMLElement = document.querySelector("ul")
+        const actual: string = getPath(el)
         expect(actual).toBe("body ul#list.items")
         testSelectorIsUnique(el, actual)
     })
@@ -88,8 +88,8 @@ describe("getPath should return", () => {
             "    <li>green</li>\n" +
             "    <li>brown</li>\n" +
             "  </ul>\n"
-        const el = document.querySelector("li")
-        const actual = getPath(el)
+        const el: HTMLElement = document.querySelector("li")
+        const actual: string = getPath(el)
         expect(actual).toBe("body ul.items li:first-child")
         testSelectorIsUnique(el, actual)
     })
@@ -103,8 +103,8 @@ describe("getPath should return", () => {
             "    <li>green</li>\n" +
             "    <li>brown</li>\n" +
             "  </ul>\n"
-        const el = document.querySelector("li")
-        const actual = getPath(el)
+        const el: HTMLElement = document.querySelector("li")
+        const actual: string = getPath(el)
         expect(actual).toBe("body ul.items li:first-of-type")
         testSelectorIsUnique(el, actual)
     })
@@ -116,8 +116,8 @@ describe("getPath should return", () => {
             "    <li>green</li>\n" +
             "    <li>brown</li>\n" +
             "  </ul>\n"
-        const el = document.getElementsByTagName("li")[2]
-        const actual = getPath(el)
+        const el: HTMLElement = document.getElementsByTagName("li")[2]
+        const actual: string = getPath(el)
         expect(actual).toBe("body ul.items li:nth-child(3)")
         testSelectorIsUnique(el, actual)
     })
@@ -131,8 +131,8 @@ describe("getPath should return", () => {
             "    <li>green</li>\n" +
             "    <li>brown</li>\n" +
             "  </ul>\n"
-        const el = document.getElementsByTagName("li")[2]
-        const actual = getPath(el)
+        const el: HTMLElement = document.getElementsByTagName("li")[2]
+        const actual: string = getPath(el)
         expect(actual).toBe("body ul.items li:nth-of-type(3)")
         testSelectorIsUnique(el, actual)
     })
@@ -145,8 +145,8 @@ describe("getPath should return", () => {
             "    <div>extra div</div>\n" +
             "    <li>brown</li>\n" +
             "  </ul>\n"
-        const el = document.getElementsByTagName("li")[3]
-        const actual = getPath(el)
+        const el: HTMLElement = document.getElementsByTagName("li")[3]
+        const actual: string = getPath(el)
         expect(actual).toBe("body ul.items li:last-child")
         testSelectorIsUnique(el, actual)
     })
@@ -159,8 +159,8 @@ describe("getPath should return", () => {
             "    <li>brown</li>\n" +
             "    <div>extra div</div>\n" +
             "  </ul>\n"
-        const el = document.getElementsByTagName("li")[3]
-        const actual = getPath(el)
+        const el: HTMLElement = document.getElementsByTagName("li")[3]
+        const actual: string = getPath(el)
         expect(actual).toBe("body ul.items li:last-of-type")
         testSelectorIsUnique(el, actual)
     })
@@ -173,8 +173,8 @@ describe("getPath should return", () => {
             "    <li>brown</li>\n" +
             "    <div>extra div</div>\n" +
             "  </ul>\n"
-        const el = document.getElementsByTagName("li")[1]
-        const actual = getPath(el)
+        const el: HTMLElement = document.getElementsByTagName("li")[1]
+        const actual: string = getPath(el)
         expect(actual).toBe("body ul.items li.color:nth-child(2)")
         testSelectorIsUnique(el, actual)
     })
