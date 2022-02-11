@@ -46,19 +46,27 @@
 // 2
 //
 
-function promiseReduce(asyncFunctions, reducer, initialValue) {
-    let result = initialValue
+export type AsyncFunctionType<T> = () => Promise<T>
+export type ReducerType<T> = (acc: T, value: T) => T
+
+export function promiseReduce<T>(
+    asyncFunctions: Array<AsyncFunctionType<T>>,
+    reducer: ReducerType<T>,
+    initialValue: T
+): Promise<T> {
+    let result: T = initialValue
 
     return asyncFunctions.reduce(
         (chain, asyncFunction) => chain
                 .then(() => asyncFunction())
-                .then(r => {
+                .then((r: T) => {
                     result = reducer(result, r)
                     return result
                 })
-                .catch(reason => console.log(`Failed: reason = ${reason}`)),
-        Promise.resolve(initialValue)
+                .catch((reason: any) => {
+                    console.log(`Failed: reason = ${reason}`)
+                    return Promise.reject<T>(reason)
+                }),
+        Promise.resolve<T>(initialValue)
     )
 }
-
-module.exports = promiseReduce

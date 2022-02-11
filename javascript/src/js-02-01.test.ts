@@ -1,16 +1,21 @@
-const promiseReduce = require("./js-02-01")
+import {
+    AsyncFunctionType,
+    promiseReduce,
+    ReducerType,
+} from "./js-02-01"
+
 describe("promiseReduce", () => {
-    const fn1 = () => {
+    const fn1: AsyncFunctionType<number> = () => {
         console.log('fn1')
         return Promise.resolve(1)
     }
 
-    const fn2 = () => new Promise(resolve => {
+    const fn2: AsyncFunctionType<number> = () => new Promise(resolve => {
         console.log('fn2')
         setTimeout(() => resolve(2), 1000)
     })
 
-    const reducer = (memo, value) => {
+    const reducer: ReducerType<number> = (memo, value) => {
         console.log('reduce')
         return memo * value
     }
@@ -18,7 +23,7 @@ describe("promiseReduce", () => {
     const mockReducer = jest.fn()
 
     it("should return initialValue in case of empty array", () => {
-        const actual = promiseReduce(
+        const actual: Promise<number> = promiseReduce<number>(
             [],
             reducer,
             1,
