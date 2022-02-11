@@ -32,25 +32,31 @@
 Можно видеть, что первый массив пересекается со всеми остальными, и
 потому результат является всем множеством значений. */
 
-function hasIntersection(set1, set2) {
+export type StringSetArray = Array<Set<string>>
+export type StringArrayArray = Array<Array<string>>
+export type StringSet = Set<string>
+export type StringArray = Array<string>
+
+export function hasIntersection(set1: StringSet, set2: StringSet): boolean {
     return Array.from(set1).filter(s1 => set2.has(s1)).length > 0
 }
 
-function join(set1, set2) {
+export function join(set1: StringSet, set2: StringSet): StringSet {
     return new Set([...set1, ...set2])
 }
 
-function joinArrayOfSets(sets) {
+export function joinArrayOfSets(sets: StringSetArray): StringSet {
     return sets.reduce((acc, set) => join(acc, set), new Set())
 }
 
-function process(sets){
-    let recs = []
+// @ts-ignore
+export function process(sets: StringSetArray | StringArrayArray): StringSetArray {
+    let recs: Array<Set<string>> = []
     for (let cart of sets) {
-        let cartSet = new Set(cart)
+        let cartSet: Set<string> = new Set(cart)
         if (recs.length === 0) recs.push(cartSet)
         else {
-            const commonRec = []
+            const commonRec: Array<Set<string>> = []
             commonRec.push(cartSet)
             for (let i = 0; i < recs.length; i++) {
                 if (hasIntersection(recs[i], cartSet)) {
@@ -63,25 +69,15 @@ function process(sets){
     return recs
 }
 
-function maxItemAssociation(carts) {
-    const primaryRecs = process(carts)
-    const processedRecs = process(primaryRecs)
+export function maxItemAssociation(carts: StringArrayArray): StringArray {
+    const primaryRecs: StringSetArray = process(carts)
+    const processedRecs: StringSetArray = process(primaryRecs)
 
-    const maxLength = Math.max(...processedRecs.map(rec => rec.size))
+    const maxLength: number = Math.max(...processedRecs.map(rec => rec.size))
 
-    const resultRec = processedRecs
+    return processedRecs
         .filter(rec => rec.size === maxLength)
         .map(rec => Array.from(rec).sort())
         .sort()
         .shift()
-
-    return Array.from(resultRec)
 }
-
-module.exports = {
-    hasIntersection, 
-    join, 
-    joinArrayOfSets, 
-    process, 
-    maxItemAssociation
-};
