@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "tree": "node js-04-01.runner.js",
+    "tree": "npx tsc src/js-04-01.runner.ts | node src/js-04-01.runner.js",
     "js5-generator": "node js-05-01.generator.js",
     "js5-merger": "node --max-old-space-size=50 js-05-01.js",
     "test": "jest"
@@ -13,6 +13,7 @@
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.17.2",
+    "@babel/plugin-transform-runtime": "^7.17.0",
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-typescript": "^7.16.7",
     "@types/jest": "^27.4.0",

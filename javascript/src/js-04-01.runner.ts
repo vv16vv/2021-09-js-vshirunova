@@ -5,9 +5,9 @@
 //     Скрипт принимает входной параметр - путь до папки.
 //     Добавить возможность выполнять этот скрипт через команду npm run tree -- path
 
-const {processFolder} = require("./js-04-01.js")
+import {processFolder, FileObject} from "./js-04-01"
 
-const args = process.argv.slice(2)
+const args: Array<string> = process.argv.slice(2)
 if (args.length < 1) {
     console.log(`Path parameter not specified`)
     console.log(`Usage through npm: npm tree -- <path>`)
@@ -16,11 +16,11 @@ if (args.length < 1) {
     process.exit(-1)
 }
 
-const exploredPath = args[0]
+const exploredPath: string = args[0]
 console.log(`Found path: ${exploredPath}`);
 
-(async (path) => {
-    const result = await processFolder(path, [])
+(async (path: string) => {
+    const result: Array<FileObject> = await processFolder(path, [])
     console.log(JSON.stringify(result))
 })(exploredPath)
 
