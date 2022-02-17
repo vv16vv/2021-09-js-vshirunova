@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Домашнее задание "Custom Elements Tree"</title>
+
+  <!--suppress CssUnusedSymbol -->
+  <style>
+    body {
+      padding: 1em;
+    }
+
+    main {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 1em;
+    }
+
+    section[name="form"] {
+      display: flex;
+      flex-direction: column;
+      height: 95vh;
+    }
+
+    label {
+      font-family: Tahoma, sans-serif;
+      font-size: 14px;
+      margin-bottom: 1em;
+    }
+
+    textarea {
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      resize: none;
+      margin-bottom: 1em;
+      font-family: Consolas, sans-serif;
+      font-size: 14px;
+    }
+
+    .error {
+      border-color: crimson;
+      background-color: rgba(220, 20, 60, 0.07);
+      margin-bottom: 0.5em;
+    }
+
+    .message {
+      font-family: Tahoma, sans-serif;
+      font-size: 14px;
+      color: darkred;
+      padding: 0;
+      margin-top: 0;
+      margin-bottom: 1em;
+    }
+
+    button[type="submit"]{
+      padding: 1em;
+      width: 100%;
+      margin-top: auto;
+      box-sizing: border-box;
+      border: 1px solid darkblue;
+      color: darkblue;
+
+      font-family: Tahoma, sans-serif;
+      font-size: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.3em;
+    }
+
+  </style>
+</head>
+<body>
+<script src="js/my-constants.js"></script>
+<script src="js/my-leaf.js"></script>
+<script src="js/my-tree.js"></script>
+<script src="js/my-structure.js"></script>
+<script src="js/index.js"></script>
+<main>
+  <section name="form">
+    <label for="jsonText">Задайте иерархическую структуру с помощью JSON. Атрибуты <code>name</code> и <code>items</code> обязательные.</label>
+    <textarea id="jsonText">
+{
+  "id": 1,
+  "name": "Folder1",
+  "items": [
+    {
+      "id": 2,
+      "name": "Folder11",
+      "items": []
+    },
+    {
+      "id": 3,
+      "name": "Folder12",
+      "items": [
+        {
+          "id": 4,
+          "name": "File121"
+        },
+        {
+          "id": 5,
+          "name": "File122"
+        },
+        {
+          "id": 6,
+          "name": "File123"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "File11"
+    },
+    {
+      "id": 8,
+      "name": "File12"
+    }
+  ]
+}
+</textarea>
+    <p class="message" hidden>Некорректная структура JSON. Имена атрибутов должны быть в кавычках, последняя запятая отсутствует.</p>
+    <button type="submit" onclick="apply()">Применить</button>
+  </section>
+
+  <my-structure tree='{"id":1,"name":"Folder1","items":[{"id":2,"name":"Folder11","items":[]},{"id":3,"name":"Folder12","items":[{"id":4,"name":"File121","items":null},{"id":5,"name":"File122"},{"id":6,"name":"File123"}]},{"id":7,"name":"File11"},{"id":8,"name":"File12","items":null}]}'></my-structure>
+</main>
+</body>
+</html>
