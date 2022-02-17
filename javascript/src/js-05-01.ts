@@ -27,26 +27,26 @@
 $ node --max-old-space-size=50 script.js
 * */
 
-const {rmSync} = require("fs");
+import {rmSync} from "fs"
 
-const utils = require("./js-05-01.const")
-const {divider} = require("./js-05-01.divider")
-const {mergerNFiles} = require("./js-05-01.n-merger");
+import * as utils from "./js-05-01.const"
+import {divider} from "./js-05-01.divider"
+import {mergerNFiles} from "./js-05-01.n-merger"
 
-(async (fileName) => {
+(async (fileName: string) => {
     const label = "merger"
 
     console.time(label)
-    const counter = await divider(fileName, utils.DST_FILE_CAPACITY)
+    const counter: number = await divider(fileName, utils.DST_FILE_CAPACITY)
     console.log(`Исходный файл разрезан на ${counter} небольших файлов`)
     console.timeLog(label)
 
-    const fileNames = []
+    const fileNames: string[] = []
     for (let i = 0; i < counter; i++) {
         fileNames.push(utils.getFileName(fileName, i + 1))
     }
 
-    const resultFile = utils.getResultFileName(fileName)
+    const resultFile: string = utils.getResultFileName(fileName)
     await mergerNFiles(fileNames, resultFile)
     console.log(`Промежуточные файлы слиты в один`)
     console.timeLog(label)

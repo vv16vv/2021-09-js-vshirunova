@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "tree": "npx tsc src/js-04-01.runner.ts | node src/js-04-01.runner.js",
-    "js5-generator": "node js-05-01.generator.js",
-    "js5-merger": "node --max-old-space-size=50 js-05-01.js",
+    "tree": "npx tsc src/js-04-01.runner.ts && node src/js-04-01.runner.js",
+    "js5-generator": "npx tsc src/js-05-01.generator.ts && node src/js-05-01.generator.js",
+    "js5-merger": "npx tsc src/js-05-01.ts && node --max-old-space-size=50 src/js-05-01.js",
     "test": "jest"
   },
   "author": "Viktoria Shirunova",
@@ -22,5 +22,8 @@
     "jest": "^27.2.4",
     "jsdom": "^18.0.0",
     "typescript": "^4.5.5"
+  },
+  "engines": {
+    "node": ">=16"
   }
 }

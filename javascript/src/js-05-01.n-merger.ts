@@ -1,16 +1,29 @@
-const {open} = require("fs/promises")
-const {finished} = require("stream/promises")
+import {open} from "fs/promises"
+import {finished} from "stream/promises"
 
-const {Buffer2Number} = require("./js-05-01.Buffer2Number")
-const consts = require("./js-05-01.const")
+import {Buffer2Number} from "./js-05-01.Buffer2Number"
+import {WATERMARK} from "./js-05-01.const"
+import {FileHandle} from "fs/promises"
+import {ReadStream, WriteStream} from "fs"
+import {NUMBER_SEPARATOR} from "./js-05-01.const"
 
 let countW = 0
 
 class File {
-    constructor(srcFile, n) {
+    private readonly n: number
+    private readonly srcFile: FileHandle
+    private readonly source: ReadStream
+    private readonly transformer: Buffer2Number
+    readonly r: Buffer2Number
+
+    curr: number | null
+    isFinished: boolean
+    count: number
+
+    constructor(srcFile: FileHandle, n: number) {
         this.n = n
         this.srcFile = srcFile
-        this.source = srcFile.createReadStream({highWaterMark: consts.WATERMARK})
+        this.source = srcFile.createReadStream({highWaterMark: WATERMARK})
         this.transformer = new Buffer2Number()
         this.r = this.source.pipe(this.transformer)
 
@@ -33,16 +46,16 @@ class File {
     }
 }
 
-const processData = (files, dst) => {
-    if (files.some(file => (file.curr === undefined) || (file.curr === null && !file.isFinished))) {
+const processData = (files: Array<File>, dst: WriteStream) => {
+    if (files.some((file: File) => (file.curr === undefined) || (file.curr === null && !file.isFinished))) {
         // хотя бы один поток еще не прочитал начальные данные
-        // или какие-то потоки данные сдали в выходной поток,
+        // или какие-то потоки сдали данные в выходной поток,
         // но новые данные еще не прочитали
         return
     }
 
     // потоки, в которых еще есть какие-то данные = незавершенные потоки
-    const stillRunningFiles = files.filter(file => file.curr !== null)
+    const stillRunningFiles: Array<File> = files.filter(file => file.curr !== null)
 
     if (stillRunningFiles.length === 0) {
         // Все потоки завершены = из всех файлов прочитаны все числа
@@ -53,14 +66,14 @@ const processData = (files, dst) => {
     // сортируем потоки по возрастанию curr, чтобы найти
     // из какого потока сейчас будем брать число
     // stillRunningFiles всегда имеет как минимум 1 поток
-    const sorted = stillRunningFiles
+    const sorted: Array<File> = stillRunningFiles
         .sort((f1, f2) => f1.curr - f2.curr)
 
     sorted
         // в нулевом элементе лежит кандидат на запись
         // заодно отбираем все такие же элементы
-        .filter(f => f.curr === sorted[0].curr)
-        .forEach(f => {
+        .filter((f: File) => f.curr === sorted[0].curr)
+        .forEach((f: File) => {
             // Дополнительная проверка на null,
             // по идее тут никогда null быть не должно
             if (f.curr !== null) {
@@ -69,7 +82,7 @@ const processData = (files, dst) => {
                 if (!f.isFinished) {
                     f.resume()
                 } else {
-                    // если текущий поток завершился, то это значит, что
+                    // Если текущий поток завершился, то это значит, что
                     // все остальные потоки сейчас стоят на паузе.
                     // Поэтому вызываем processData еще раз, чтобы
                     // взять следующее число из уже прочитанных и
@@ -82,10 +95,10 @@ const processData = (files, dst) => {
         })
 }
 
-const write = (dst, data) => {
+const write = (dst: WriteStream, data: number | null) => {
     // Дополнительная проверка на null - по идее его тут никогда не может быть
     if (data !== null) {
-        const canWrite = dst.write(`${data}${consts.NUMBER_SEPARATOR}`)
+        const canWrite = dst.write(`${data}${NUMBER_SEPARATOR}`)
         countW++
         if (!canWrite) {
             dst.removeAllListeners("drain")
@@ -94,15 +107,15 @@ const write = (dst, data) => {
     }
 }
 
-const mergerNFiles = async (fileNames, outputFileName) => {
-    const sources = []
+export const mergerNFiles = async (fileNames: string[], outputFileName: string): Promise<void> => {
+    const sources: Array<File> = []
     let index = 1
     for (const fileName of fileNames) {
         sources.push(new File(await open(fileName, 'r'), index++))
     }
 
-    const dstFile = await open(outputFileName, 'w')
-    const dst = dstFile.createWriteStream({highWaterMark: consts.WATERMARK, autoClose: true})
+    const dstFile: FileHandle = await open(outputFileName, 'w')
+    const dst: WriteStream = dstFile.createWriteStream({autoClose: true})
 
     sources.forEach(source => {
         source.r.on("data", chunk => {
@@ -125,9 +138,5 @@ const mergerNFiles = async (fileNames, outputFileName) => {
 
     await dstFile.close()
 
-    console.log(`Прочитано ${sources.map(f => f.count).reduce((p,c) => p + c, 0)} чисел, записано ${countW} чисел`)
-}
-
-module.exports = {
-    mergerNFiles,
+    console.log(`Прочитано ${sources.map(f => f.count).reduce((p, c) => p + c, 0)} чисел, записано ${countW} чисел`)
 }
