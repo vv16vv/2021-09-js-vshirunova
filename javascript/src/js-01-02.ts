@@ -13,7 +13,7 @@ export function sum(n1: SummandType | void): IntermediateType {
 
     function innerSum(n2: SummandType | void): FunctionSumType {
         if (typeof n2 === "undefined")
-            return s as number
+            return s
         s += +n2
         return innerSum as IntermediateType
     }
