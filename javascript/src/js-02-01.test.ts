@@ -1,22 +1,15 @@
-import {
-    AsyncFunctionType,
-    promiseReduce,
-    ReducerType,
-} from "./js-02-01"
+import {AsyncFunctionType, promiseReduce, ReducerType,} from "./js-02-01"
 
 describe("promiseReduce", () => {
     const fn1: AsyncFunctionType<number> = () => {
-        console.log('fn1')
         return Promise.resolve(1)
     }
 
     const fn2: AsyncFunctionType<number> = () => new Promise(resolve => {
-        console.log('fn2')
         setTimeout(() => resolve(2), 1000)
     })
 
     const reducer: ReducerType<number> = (memo, value) => {
-        console.log('reduce')
         return memo * value
     }
 
