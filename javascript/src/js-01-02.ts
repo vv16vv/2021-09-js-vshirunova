@@ -4,17 +4,19 @@
 //
 // sum(1)(2)(3)....(n)() === 1 + 2 + 3 + ... + n
 
-function sum(n1) {
-    let s = +n1
+type SummandType = number | string
+type IntermediateType = (n?: SummandType) => IntermediateType
+type FunctionSumType = IntermediateType | number
 
-    function innerSum(n2) {
+export function sum(n1?: SummandType): IntermediateType {
+    let s: number = +n1
+
+    function innerSum(n2?: SummandType): FunctionSumType {
         if (typeof n2 === "undefined")
             return s
         s += +n2
-        return innerSum
+        return innerSum as IntermediateType
     }
 
-    return innerSum
+    return innerSum as IntermediateType
 }
-
-module.exports = sum

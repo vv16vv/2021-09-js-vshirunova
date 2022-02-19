@@ -1,14 +1,13 @@
-'use strict'
-
 jest.mock("path")
-const path = require("path")
+import path from "path"
+
 const {dirname, basename} = jest.requireActual("path")
 
-const promises = jest.createMockFromModule('fs/promises')
+const promises = jest.genMockFromModule('fs/promises')
 
 let mockFiles = Object.create(null)
 
-function __setMockFiles(newMockFiles) {
+const __setMockFiles = (newMockFiles: Array<string>): void => {
     mockFiles = Object.create(null)
     for (const file of newMockFiles) {
         let dir = dirname(file)
@@ -20,16 +19,22 @@ function __setMockFiles(newMockFiles) {
     }
 }
 
-function opendir(folderPath) {
+interface DirEntry {
+    name: string,
+    isDirectory: () => boolean,
+    isFile: () => boolean
+}
+
+const opendir = (folderPath: string): Promise<Array<DirEntry>> => {
     if (!folderPath.endsWith(path.sep)) folderPath += path.sep
-    const dirents = new Map()
-    Object.entries(mockFiles)
-        .filter(([key, value]) =>
+    const dirents: Map<string, DirEntry> = new Map()
+    Object.entries<Array<string>>(mockFiles)
+        .filter(([key]) =>
             key.startsWith(folderPath),
         )
         .forEach(([key, names]) => {
-            const isFile = key === folderPath
-            const folderName = isFile ? "" : key.replace(folderPath, "").split(path.sep)[0]
+            const isFile: boolean = key === folderPath
+            const folderName: string = isFile ? "" : key.replace(folderPath, "").split(path.sep)[0]
             if (isFile) {
                 for (const name of names) {
                     dirents.set(name, {
@@ -47,11 +52,11 @@ function opendir(folderPath) {
             }
         })
     return dirents.size > 0
-        ? Promise.resolve(dirents.values())
+        ? Promise.resolve(Array.from(dirents.values()))
         : Promise.reject(new Error(`${folderPath} not found`))
 }
 
-promises.__setMockFiles = __setMockFiles
-promises.opendir = opendir
+(promises as any).__setMockFiles = __setMockFiles;
+(promises as any).opendir = opendir;
 
 module.exports = promises

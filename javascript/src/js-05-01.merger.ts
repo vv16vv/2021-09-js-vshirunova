@@ -1,18 +1,24 @@
-const {open} = require("fs/promises")
-const {finished} = require("stream/promises")
+import {open} from "fs/promises"
+import {finished} from "stream/promises"
+import {ReadStream} from "fs"
 
-const {Buffer2Number} = require("./js-05-01.Buffer2Number")
-const consts = require("./js-05-01.const");
+import {Buffer2Number} from "./js-05-01.Buffer2Number"
+import {
+    FILENAME,
+    NUMBER_SEPARATOR,
+    getFileName,
+    getTempFileName,
+} from "./js-05-01.const"
 
 let countR1 = 0
 let countR2 = 0
 let countW = 0
 
-const merger2files = async (fileName1, fileName2, outputFileName) => {
+export const merger2files = async (fileName1: string, fileName2: string, outputFileName: string): Promise<void> => {
     const srcFile1 = await open(fileName1, 'r')
     const srcFile2 = await open(fileName2, 'r')
 
-    const source1 = srcFile1.createReadStream()
+    const source1: ReadStream = srcFile1.createReadStream()
     const source2 = srcFile2.createReadStream()
 
     const dstFile = await open(outputFileName, 'w')
@@ -21,17 +27,17 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
     const transformer1 = new Buffer2Number()
     const transformer2 = new Buffer2Number()
 
-    let curr1 = undefined
-    let curr2 = undefined
+    let curr1: string | null = undefined
+    let curr2: string | null = undefined
 
-    const r1 = source1.pipe(transformer1)
-    const r2 = source2.pipe(transformer2)
+    const r1: Buffer2Number = source1.pipe(transformer1)
+    const r2: Buffer2Number = source2.pipe(transformer2)
 
     let isR1Finished = false
     let isR2Finished = false
 
-    const write = (data) => {
-        const canWrite = dst.write(`${data}${consts.NUMBER_SEPARATOR}`);
+    const write = (data: string): void => {
+        const canWrite = dst.write(`${data}${NUMBER_SEPARATOR}`)
         countW++
         if (!canWrite) {
             dst.removeAllListeners("drain")
@@ -39,7 +45,7 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
         }
     }
 
-    const processData = () => {
+    const processData = (): void => {
         if (curr1 === undefined || curr2 === undefined) {
             // хотя бы один поток еще не прочитал данные
             return
@@ -79,7 +85,7 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
         countR1++
         curr1 = chunk?.toString() ?? null
         r1.pause()
-        if(curr1 !== null) {
+        if (curr1 !== null) {
             processData()
         }
     })
@@ -88,7 +94,7 @@ const merger2files = async (fileName1, fileName2, outputFileName) => {
         countR2++
         curr2 = chunk?.toString() ?? null
         r2.pause()
-        if(curr2 !== null) {
+        if (curr2 !== null) {
             processData()
         }
     })
@@ -119,16 +125,10 @@ const testMerger = async () => {
     const label = "merger2files"
     console.time(label)
     await merger2files(
-        consts.getFileName(consts.FILENAME, 1),
-        consts.getFileName(consts.FILENAME, 2),
-        consts.getTempFileName(),
+        getFileName(FILENAME, 1),
+        getFileName(FILENAME, 2),
+        getTempFileName(),
     )
     console.timeEnd(label)
     console.log(`Слияние: первый файл = ${countR1} чисел, второй файл = ${countR2} чисел, итоговый файл = ${countW} чисел`)
-}
-
-// testMerger()
-
-module.exports = {
-    merger2files,
 }
