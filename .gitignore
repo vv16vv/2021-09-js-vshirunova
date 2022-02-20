@@ -1,4 +1,5 @@
 .idea
 javascript/node_modules
-
 weather-app/node_modules
+graphql/node_modules
+web-components/node_modules

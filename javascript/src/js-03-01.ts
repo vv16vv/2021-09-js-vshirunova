@@ -9,25 +9,25 @@
 //     $0 // HTMLElement
 // getPath($0) // => "body div.someclass ul li:first-child"
 
-rootElement = (htmlElement) => {
-    let parent = htmlElement
+const rootElement = (htmlElement: HTMLElement): HTMLElement => {
+    let parent: HTMLElement = htmlElement
     while (parent.parentElement !== null) {
         parent = parent.parentElement
     }
     return parent
 }
 
-hasElementUniqueSelector = (htmlElement, selector) => {
-    const root = rootElement(htmlElement)
-    const elements = root.querySelectorAll(selector)
+const hasElementUniqueSelector = (htmlElement: HTMLElement, selector: string): boolean => {
+    const root: HTMLElement = rootElement(htmlElement)
+    const elements: NodeListOf<HTMLElement> = root.querySelectorAll(selector)
     return elements.length === 1
 }
 
-getPath = (htmlElement, prev = "") => {
+export const getPath = (htmlElement: HTMLElement, prev: string = ""): string | null => {
     if (htmlElement.tagName.toLowerCase() === "body") return `body ${prev}`.toLowerCase().trim()
     else if (htmlElement.parentElement === null) return null
     else {
-        const idSelector = htmlElement.id !== "" ? `#${htmlElement.id}` : ""
+        const idSelector: string = htmlElement.id !== "" ? `#${htmlElement.id}` : ""
         if (idSelector !== "" && hasElementUniqueSelector(htmlElement, idSelector)) return `${idSelector} ${prev}`.toLowerCase().trim()
         const classNameSelector = htmlElement.className !== ""
             ? `.${htmlElement.className.trim().split(" ").join(".")}`
@@ -37,7 +37,7 @@ getPath = (htmlElement, prev = "") => {
         let isOneByOne = true
         let orderByTypes = 0
         let currentIndex = 0
-        let sibling = htmlElement
+        let sibling: Element = htmlElement
         while (sibling.previousElementSibling !== null) {
             sibling = sibling.previousElementSibling
             currentIndex++
@@ -81,7 +81,7 @@ getPath = (htmlElement, prev = "") => {
         *       orderByElements == orderByType == currentIndex => :last-child
         *       else => :last-of-type
         * */
-        let tail
+        let tail: string
         if (!otherByElements && !otherByType) {
             // no next siblings
             if (currentIndex === 0) {
@@ -108,9 +108,7 @@ getPath = (htmlElement, prev = "") => {
             }
         }
 
-        const path = `${htmlElement.tagName}${idSelector}${classNameSelector}${tail} ${prev}`
+        const path: string = `${htmlElement.tagName}${idSelector}${classNameSelector}${tail} ${prev}`
         return getPath(htmlElement.parentElement, path)
     }
 }
-
-module.exports = getPath
