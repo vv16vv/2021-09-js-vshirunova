@@ -1,0 +1,20 @@
+.windForce {
+  text-align: right;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.windDirection {
+  text-align: center;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.temperature {
+  padding-right: 15px;
+  text-align: right;
+}
+
+.date {
+  padding-left: 15px;
+}

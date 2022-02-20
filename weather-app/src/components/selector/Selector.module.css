@@ -1,0 +1,67 @@
+.button {
+  background-color: var(--main-blue);
+  color: var(--main-white);
+  border: none;
+  width: 100%;
+
+  padding: 28px 23px;
+  border-radius: var(--corner-radius);
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  cursor: pointer;
+  opacity: 1;
+
+  transition-property: opacity;
+  transition-duration: var(--transition-duration);
+}
+
+.buttonWithPopup {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.button:hover {
+  opacity: var(--hover-opacity);
+}
+
+.button:active {
+  opacity: var(--active-opacity);
+}
+
+.title {
+  margin: 0;
+
+  font-family: Roboto, sans-serif;
+  font-size: 16px;
+
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.sign {
+  width: 21px;
+  height: 11px;
+}
+
+.popup {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+
+  list-style-type: none;
+
+  border: 1px solid var(--border-blue);
+  border-top: none;
+  box-sizing: border-box;
+
+  border-bottom-right-radius: var(--corner-radius);
+  border-bottom-left-radius: var(--corner-radius);
+}
+
+.cityItem {
+  /*pa*/
+}

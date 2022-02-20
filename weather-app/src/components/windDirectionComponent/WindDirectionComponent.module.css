@@ -1,0 +1,28 @@
+.directionS {
+  transform: rotate(180deg);
+}
+
+.directionSW {
+  transform: rotate(-135deg);
+}
+
+.directionSE {
+  transform: rotate(135deg);
+}
+
+.directionNE {
+  transform: rotate(45deg);
+}
+
+.directionNW {
+  transform: rotate(-45deg);
+}
+
+.directionW {
+  transform: rotate(-90deg);
+}
+
+.directionE {
+  transform: rotate(90deg);
+}
+

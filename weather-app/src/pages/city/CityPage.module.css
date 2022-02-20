@@ -1,0 +1,53 @@
+.container {
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+
+  padding: 60px 0;
+
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  grid-template-areas: "city country" "forecast forecast";
+}
+
+.city {
+  grid-area: city;
+  margin: 0;
+  padding: 15px 15px 0 0;
+
+  letter-spacing: 0.05em;
+  align-self: end;
+  text-transform: uppercase;
+  color: var(--main-blue);
+}
+
+.country {
+  grid-area: country;
+  margin: 0;
+  padding: 15px 15px 4px 0;
+
+  align-self: end;
+  font-style: italic;
+  color: var(--main-gray);
+}
+
+.forecast {
+  grid-area: forecast;
+
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 1fr 120px 64px 100px 50px;
+  align-items: center;
+
+  padding: 5px;
+  color: var(--main-gray);
+}
+
+.item:nth-child(2n + 1) {
+  background-color: var(
+  --border-blue);
+}
