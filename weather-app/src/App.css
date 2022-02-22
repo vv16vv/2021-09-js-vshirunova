@@ -1,0 +1,57 @@
+:root {
+  --main-white: #ffffff;
+  --main-blue: #5c9fc5;
+  --main-gray: #585858;
+  --border-blue: rgba(92, 159, 197, 0.50);
+
+  --shadow: #282c34;
+  --text-shadow: var(--shadow) 1px 1px 5px;
+
+  --transition-duration: 0.3s;
+  --active-opacity: 60%;
+  --hover-opacity: 40%;
+
+  --corner-radius: 4px;
+
+  --min-width: 245px;
+}
+
+.App {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  font-family: Roboto, sans-serif;
+
+  min-width: var(--min-width);
+  overflow-x: auto;
+}
+
+.link {
+  text-decoration: none;
+  transition-property: opacity, text-shadow;
+  transition-duration: var(--transition-duration), var(--transition-duration);
+}
+
+.link:hover {
+  text-shadow: var(--text-shadow);
+}
+
+.link:active {
+  opacity: var(--active-opacity);
+}
+
+.temperature::after {
+  content: "\00b0 C";
+}
+
+.windForce::after {
+  content: " м/с";
+}
+
+.layout {
+  min-width: var(--min-width);
+  width: 1000px;
+  margin: 0 auto;
+}

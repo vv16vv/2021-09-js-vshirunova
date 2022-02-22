@@ -1,0 +1,31 @@
+.link {
+  display: grid;
+  grid-template-columns: 1fr 120px 64px;
+  align-items: center;
+
+  padding: 5px;
+
+  color: var(--main-gray);
+  font-size: 20px;
+}
+
+.temperature {
+  padding-right: 15px;
+  text-align: right;
+}
+
+.country {
+  font-size: 16px;
+  font-style: italic;
+  padding-top: 4px;
+}
+
+.link {
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.link:hover {
+  background-color: var(--border-blue);
+}
+

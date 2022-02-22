@@ -1,0 +1,33 @@
+.header {
+  background-color: var(--main-blue);
+  width: 100%;
+}
+
+.container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 42px;
+
+  padding: 28px 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.title {
+  font-family: Roboto, sans-serif;
+  font-size: 64px;
+  line-height: 64px;
+  text-transform: uppercase;
+
+  margin: 0;
+
+  color: var(--main-white);
+}
+
+.back {
+  color: var(--main-white);
+  margin-left: auto;
+  margin-top: auto;
+  padding-bottom: 7px;
+}
