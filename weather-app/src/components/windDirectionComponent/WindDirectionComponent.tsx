@@ -8,53 +8,37 @@ interface WindDirectionProps {
   direction: WindDirection
 }
 
+const windDirectionRu: Readonly<Map<WindDirection, string>> = Object.freeze(new Map([
+  ['N', 'Северный'],
+  ['NW', 'Северо-западный'],
+  ['W', 'Западный'],
+  ['SW', 'Юго-западный'],
+  ['S', 'Южный'],
+  ['SE', 'Юго-восточный'],
+  ['E', 'Восточный'],
+  ['NE', 'Северо-восточный'],
+]) as Map<WindDirection, string>)
+
+const classNames: Readonly<Map<WindDirection, string>> = Object.freeze(new Map([
+  ['N', ""],
+  ['NW', styles.directionNW],
+  ['W', styles.directionW],
+  ['SW', styles.directionSW],
+  ['S', styles.directionS],
+  ['SE', styles.directionSE],
+  ['E', styles.directionE],
+  ['NE', styles.directionNE],
+]) as Map<WindDirection, string>)
+
 export const WindDirectionComponent: FC<WindDirectionProps> = ({direction}) => {
-  let className
-  let title
-
-  switch (direction) {
-    case "N":
-      title = "северный"
-      break;
-    case "NW":
-      className = styles.directionNW
-      title = "северо-западный"
-      break;
-    case "W":
-      className = styles.directionW
-      title = "западный"
-      break;
-    case "SW":
-      className = styles.directionSW
-      title = "юго-западный"
-      break;
-    case "S":
-      className = styles.directionS
-      title = "южный"
-      break;
-    case "SE":
-      className = styles.directionSE
-      title = "юго-восточный"
-      break;
-    case "E":
-      className = styles.directionE
-      title = "восточный"
-      break;
-    case "NE":
-      className = styles.directionNE
-      title = "северо-восточный"
-      break;
-
-  }
-
   return <>
     <img
-      className={className}
+      className={classNames.get(direction)}
       src={arrow}
       width={11}
       height={11}
       alt={direction}
-      title={title}
+      title={windDirectionRu.get(direction)}
     />
   </>
 }
